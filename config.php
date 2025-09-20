@@ -12,7 +12,7 @@ $cfg_email_admin = 'tuyennhq@gmail.com';
 
 
 // Đường dẫn gốc (điều chỉnh nếu đặt thư mục khác)
-$cfg_base_url = '/event-manage';
+$cfg_base_url = '/';
 
 
 // Bắt đầu session cho toàn dự án

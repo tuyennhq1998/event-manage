@@ -32,7 +32,7 @@ function dang_nhap($email, $mat_khau) {
 
 function bat_buoc_dang_nhap() {
     if (empty($_SESSION['user_id'])) {
-        header('Location: /event-manage/public/dang_nhap.php');
+        header('Location: /public/dang_nhap.php');
         exit;
     }
 }
