@@ -11,6 +11,7 @@ $base = rtrim($cfg_base_url, '/');
   <div class="admin-tab bao-cao" data-tab="bao-cao">Báo cáo tham gia</div>
   <div class="admin-tab user" data-tab="user">Quản lý user</div>
   <div class="admin-tab cai-dat" data-tab="cai-dat">Cài đặt</div>
+  <div class="admin-tab lien-he" data-tab="lien-he">Liên hệ</div>
 </div>
 
 <div class="admin-noi-dung" id="noi-dung-admin">
@@ -34,7 +35,8 @@ async function loadAdminTab(key, page=1){
     'su-kien': `${BASE}/admin/tab_su_kien.php?page=${page}&per_page=${perPage}&q=${encodeURIComponent(q)}`,
     'user':    `${BASE}/admin/tab_user.php?page=${page}&per_page=${perPage}&q=${encodeURIComponent(q)}`,
     'bao-cao': `${BASE}/admin/tab_bao_cao.php?page=${page}&per_page=${perPage}&q=${encodeURIComponent(q)}`,
-    'cai-dat':  `${BASE}/admin/tab_cai_dat.php`
+    'cai-dat':  `${BASE}/admin/tab_cai_dat.php`,
+    'lien-he':  `${BASE}/admin/tab_lien_he.php`,
   };
 
   // active UI
