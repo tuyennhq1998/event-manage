@@ -39,7 +39,8 @@ $cho_phep_dk = ($tt === 'sap_toi') && ($gioi_han <= 0 || $con_lai > 0);
 
 <!-- Banner đỏ -->
 <div class="banner-do">
-  <h1>Chi tiết sự kiện</h1>
+  <?php $banner_su_kien = $su_kien['anh_bia'] ? $su_kien['anh_bia'] : $cfg_base_url.'/uploads/banner/banner-su-kien-8.jpg'; ?>
+  <img src="<?= htmlspecialchars($banner_su_kien) ?>" alt="Anh bia" style="height:300px">
 </div>
 
 <div class="chi-tiet-su-kien-header" style="text-align:center">
