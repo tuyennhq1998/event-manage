@@ -1,64 +1,80 @@
 <?php
 require_once __DIR__ . '/../functions.php';
-$banner = get_option('site_banner');
-
-function ds_theo_tt($tt,$limit=3,$offset=0){
-  global $ket_noi; $now=date('Y-m-d H:i:s');
-  if ($tt==='sap_toi'){ $where='thoi_gian_bat_dau > :now'; $order=' ORDER BY thoi_gian_bat_dau ASC '; }
-  elseif($tt==='dang_dien_ra'){ $where='thoi_gian_bat_dau<=:now AND thoi_gian_ket_thuc>=:now'; $order=' ORDER BY thoi_gian_bat_dau ASC '; }
-  else{ $where='thoi_gian_ket_thuc < :now'; $order=' ORDER BY thoi_gian_bat_dau DESC '; }
-  $sql="SELECT * FROM events WHERE $where $order LIMIT :lim OFFSET :off";
-  $stm=$ket_noi->prepare($sql); $stm->bindValue(':now',$now); $stm->bindValue(':lim',$limit,PDO::PARAM_INT); $stm->bindValue(':off',$offset,PDO::PARAM_INT); $stm->execute();
-  return $stm->fetchAll(PDO::FETCH_ASSOC);
-}
-function chip($tt){ return $tt==='sap_toi'?'Sắp tới':($tt==='dang_dien_ra'?'Đang diễn ra':'Đã kết thúc'); }
-function render_card($sk,$chip){
-  $link=htmlspecialchars($GLOBALS['cfg_base_url'].'/public/su_kien.php?id='.$sk['id']);
-  $tieu_de=htmlspecialchars($sk['tieu_de']); $bg=trim((string)($sk['anh_bia']??''));
-  if($bg===''){ return '<a class="o-anh" href="'.$link.'" style="background:#ff8c00;display:flex;align-items:flex-end"><div class="chip-nho">'.$chip.'</div><div class="tieu_de" style="color:#fff;padding:12px;font-weight:700">'.$tieu_de.'</div></a>'; }
-  return '<a class="o-anh" href="'.$link.'"><div class="bg" style="background-image:url(\''.$bg.'\')"></div><div class="lop"></div><div class="chip-nho">'.$chip.'</div><div class="tieu_de">'.$tieu_de.'</div></a>';
-}
-$ds1 = ds_theo_tt('sap_toi',3,0);
-$ds2 = ds_theo_tt('dang_dien_ra',3,0);
-$ds3 = ds_theo_tt('da_ket_thuc',3,0);
+$ds = banners_all();
 include __DIR__ . '/../layout/header.php';
 ?>
-<div id="home-page" class="home-page" data-base-url="<?= htmlspecialchars($cfg_base_url) ?>">
-  <div class="banner-do full-screen">
-  <img src="<?= htmlspecialchars($logo) ?>" alt="Logo" style="height:400px">
+
+<style>
+.slider-wrap{ position:relative; overflow:hidden; border-radius:20px; }
+.slider-track{ display:flex; transition:transform .5s ease; }
+.slide{ flex:0 0 100%; height:850px; min-height:800px; position:relative; }
+.slide img{ width:100%; height:100%; object-fit:cover; display:block; }
+.slider-dots{ position:absolute; left:0; right:0; bottom:14px; display:flex; gap:8px; justify-content:center; }
+.slider-dot{
+  width:9px; height:9px; border-radius:999px; background:rgba(255,255,255,.55); border:1px solid rgba(0,0,0,.15); cursor:pointer;
+}
+.slider-dot.active{ background:#fff; }
+.slider-arrow{
+  position:absolute; top:50%; transform:translateY(-50%);
+  background:rgba(15,23,42,.55); color:#fff; border:0; width:42px; height:42px;
+  border-radius:999px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.slider-prev{ left:12px; } .slider-next{ right:12px; }
+</style>
+
+<div class="the" style="padding:0; overflow:hidden">
+  <div class="slider-wrap" id="banner-slider">
+    <div class="slider-track">
+      <?php foreach($ds as $b): ?>
+        <div class="slide">
+          <img src="<?= htmlspecialchars($b) ?>" alt="banner">
+        </div>
+      <?php endforeach; ?>
+      <?php if (empty($ds)): ?>
+        <div class="slide" style="display:flex;align-items:center;justify-content:center;background:#f1f5f9">
+          <div class="nho">Chưa có banner. Hãy thêm trong tab Cài đặt.</div>
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <?php if (!empty($ds)): ?>
+      <button class="slider-arrow slider-prev" aria-label="Prev">‹</button>
+      <button class="slider-arrow slider-next" aria-label="Next">›</button>
+      <div class="slider-dots">
+        <?php foreach(array_keys($ds) as $i): ?>
+          <button class="slider-dot <?= $i===0?'active':'' ?>" data-idx="<?= $i ?>"></button>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
   </div>
-
-  <div class="home-tabs">
-    <button class="tab active" data-nhom="sap_toi">Sắp tới</button>
-    <button class="tab" data-nhom="dang_dien_ra">Đang diễn ra</button>
-    <button class="tab" data-nhom="da_ket_thuc">Đã kết thúc</button>
-  </div>
-
-  <!-- Pane: Sắp tới -->
-  <section class="home-pane active" data-nhom="sap_toi">
-    <h3 class="home-h3">Sắp tới</h3>
-    <div class="home-grid" data-nhom="sap_toi">
-      <?php foreach($ds1 as $sk) echo render_card($sk, chip('sap_toi')); if(empty($ds1)) echo '<p class="nho">Không có sự kiện.</p>';?>
-    </div>
-    <div class="home-see-more"><button class="btn-more" data-nhom="sap_toi">Xem thêm</button></div>
-  </section>
-
-  <!-- Pane: Đang diễn ra -->
-  <section class="home-pane" data-nhom="dang_dien_ra">
-    <h3 class="home-h3">Đang diễn ra</h3>
-    <div class="home-grid" data-nhom="dang_dien_ra">
-      <?php foreach($ds2 as $sk) echo render_card($sk, chip('dang_dien_ra')); if(empty($ds2)) echo '<p class="nho">Không có sự kiện.</p>';?>
-    </div>
-    <div class="home-see-more"><button class="btn-more" data-nhom="dang_dien_ra">Xem thêm</button></div>
-  </section>
-
-  <!-- Pane: Đã kết thúc -->
-  <section class="home-pane" data-nhom="da_ket_thuc">
-    <h3 class="home-h3">Đã kết thúc</h3>
-    <div class="home-grid" data-nhom="da_ket_thuc">
-      <?php foreach($ds3 as $sk) echo render_card($sk, chip('da_ket_thuc')); if(empty($ds3)) echo '<p class="nho">Không có sự kiện.</p>';?>
-    </div>
-    <div class="home-see-more"><button class="btn-more" data-nhom="da_ket_thuc">Xem thêm</button></div>
-  </section>
 </div>
+
+<script>
+(function(){
+  const box = document.getElementById('banner-slider');
+  if(!box) return;
+  const track = box.querySelector('.slider-track');
+  const slides = box.querySelectorAll('.slide');
+  const dots = box.querySelectorAll('.slider-dot');
+  const prev = box.querySelector('.slider-prev');
+  const next = box.querySelector('.slider-next');
+  let idx=0, N=slides.length, timer;
+
+  function go(i){
+    if(!N) return;
+    idx = (i + N) % N;
+    track.style.transform = `translateX(-${idx*100}%)`;
+    dots.forEach((d,j)=> d.classList.toggle('active', j===idx));
+  }
+  function auto(){
+    clearInterval(timer);
+    timer = setInterval(()=> go(idx+1), 4000);
+  }
+  prev?.addEventListener('click', ()=>{ go(idx-1); auto(); });
+  next?.addEventListener('click', ()=>{ go(idx+1); auto(); });
+  dots.forEach(d=> d.addEventListener('click', ()=>{ go(+d.dataset.idx); auto(); }));
+  auto();
+})();
+</script>
+
 <?php include __DIR__ . '/../layout/footer.php'; ?>

@@ -115,3 +115,32 @@ function update_option($key, $value) {
     ");
     return $stm->execute([':k'=>$key, ':v'=>$value]);
 }
+function banners_all() {
+    global $ket_noi;
+    $sql = "SELECT opt_value FROM options WHERE opt_key = 'site_banner' LIMIT 1";
+    $val = $ket_noi->query($sql)->fetchColumn();
+    if (!$val) return []; // không có dữ liệu
+    $arr = explode(",", $val);
+    return $arr; // mảng URL banner
+}
+
+  function banner_add($path, $pos = null) {
+    global $ket_noi;
+    if ($pos === null) {
+      $pos = (int)$ket_noi->query("SELECT COALESCE(MAX(vi_tri),0)+1 FROM banners")->fetchColumn();
+    }
+    $stm = $ket_noi->prepare("INSERT INTO banners(anh_url,vi_tri) VALUES(:u,:p)");
+    $stm->execute([':u'=>$path, ':p'=>$pos]);
+    return (int)$ket_noi->lastInsertId();
+  }
+  function banner_update_pos($id, $pos) {
+    global $ket_noi;
+    $stm = $ket_noi->prepare("UPDATE banners SET vi_tri=:p WHERE id=:id");
+    return $stm->execute([':p'=>(int)$pos, ':id'=>(int)$id]);
+  }
+  function banner_delete($id) {
+    global $ket_noi;
+    $stm = $ket_noi->prepare("DELETE FROM banners WHERE id=:id");
+    return $stm->execute([':id'=>(int)$id]);
+  }
+  

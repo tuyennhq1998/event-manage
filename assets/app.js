@@ -113,37 +113,76 @@ if (tabs.length && box){
     showPane('sap_toi');
   
     // Lazy load
-    async function loadMore(nhom, btn){
-      const grid = home.querySelector(`.home-grid[data-nhom="${nhom}"]`);
-      if(!grid) return;
-      btn.disabled = true; btn.textContent = 'Đang tải...';
-      const nextPage = (pages[nhom]||1) + 1;
-  
-      try{
-        const url = `${BASE}/public/api_su_kien.php?tt=${encodeURIComponent(nhom)}&page=${nextPage}&per_page=${PER}`;
-        const res = await fetch(url, {credentials:'same-origin'});
-        const data = await res.json();
-        if (data.ok){
-          if (data.html){
-            const wrap = document.createElement('div'); wrap.innerHTML = data.html;
-            [...wrap.children].forEach(el => grid.appendChild(el));
-            pages[nhom] = nextPage;
-          }
-          if (!data.has_more){ btn.textContent='Hết dữ liệu'; btn.disabled=true; }
-          else { btn.textContent='Xem thêm'; btn.disabled=false; }
-        } else {
-          btn.textContent='Thử lại'; btn.disabled=false;
-        }
-      }catch(e){
-        console.error(e);
-        btn.textContent='Lỗi, thử lại'; btn.disabled=false;
+   // ===== Lazy load (dùng ajax_more.php + offset/limit + giữ filter) =====
+(async function(){
+  const home = document.getElementById('home-page');
+  if (!home) return;
+
+  const BASE = home.dataset.baseUrl || '';
+  const PER  = 3;
+
+  async function loadMore(nhom, btn){
+    const grid = home.querySelector(`.home-grid[data-nhom="${nhom}"]`);
+    if (!grid) return;
+
+    // offset = số item hiện có trong grid
+    const offset = grid.querySelectorAll('.o-anh').length;
+
+    // giữ các tham số lọc từ data-attributes của nút
+    const q   = btn.dataset.q || '';
+    const tu  = btn.dataset.tu || '';
+    const den = btn.dataset.den || '';
+
+    btn.disabled = true;
+    const oldText = btn.textContent;
+    btn.textContent = 'Đang tải...';
+
+    try {
+      const url = `${BASE}/public/ajax_more.php`
+        + `?nhom=${encodeURIComponent(nhom)}`
+        + `&offset=${offset}`
+        + `&limit=${PER}`
+        + `&q=${encodeURIComponent(q)}`
+        + `&tu_ngay=${encodeURIComponent(tu)}`
+        + `&den_ngay=${encodeURIComponent(den)}`;
+
+      const res  = await fetch(url, { credentials: 'same-origin' });
+      const html = await res.text();
+      const trimmed = html.trim();
+
+      if (!trimmed) {
+        btn.textContent = 'Hết dữ liệu';
+        btn.disabled = true;
+        return;
       }
+
+      const wrap = document.createElement('div');
+      wrap.innerHTML = trimmed;
+      // chỉ append các thẻ .o-anh (tránh rác/space text node)
+      wrap.querySelectorAll('.o-anh').forEach(el => grid.appendChild(el));
+
+      // Nếu trả về ít hơn PER thì coi như hết
+      const added = wrap.querySelectorAll('.o-anh').length;
+      if (added < PER) {
+        btn.textContent = 'Hết dữ liệu';
+        btn.disabled = true;
+      } else {
+        btn.textContent = 'Xem thêm';
+        btn.disabled = false;
+      }
+    } catch (e) {
+      console.error(e);
+      btn.textContent = 'Lỗi, thử lại';
+      btn.disabled = false;
     }
-  
-    home.addEventListener('click', function(e){
-      const btn = e.target.closest('.home-see-more .btn-more');
-      if (!btn) return;
-      loadMore(btn.dataset.nhom, btn);
-    });
+  }
+
+  home.addEventListener('click', function(e){
+    const btn = e.target.closest('.home-see-more .btn-more');
+    if (!btn) return;
+    loadMore(btn.dataset.nhom, btn);
+  });
+})();
+
   })();
   

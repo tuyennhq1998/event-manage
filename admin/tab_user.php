@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../functions.php';
 bat_buoc_admin();
 
+$base = $cfg_base_url;
+
 // --- lọc & phân trang ---
 $per_page = max(1, (int)($_GET['per_page'] ?? 10));
 $page     = max(1, (int)($_GET['page'] ?? 1));
@@ -35,11 +37,17 @@ function link_page($p,$per_page,$q){
   return '?'.http_build_query(['page'=>$p,'per_page'=>$per_page,'q'=>$q]);
 }
 ?>
-<h3>Quản lý user</h3>
+<div class="hang" style="justify-content:space-between;align-items:center;margin-bottom:10px">
+  <h3 style="margin:0">Quản lý user</h3>
+  <a class="nut chinh" href="<?= $base ?>/admin/user_quan_ly.php">➕ Thêm user</a>
+</div>
 
 <form class="form-tim" id="tim_user">
   <input type="search" name="q" placeholder="Tìm theo tên hoặc email…" value="<?= htmlspecialchars($q) ?>">
   <button class="nut" type="submit">🔎 Tìm</button>
+  <?php if ($q!==''): ?>
+    <a class="nut phu" href="<?= link_page(1,$per_page,'') ?>">✖ Xóa lọc</a>
+  <?php endif; ?>
 </form>
 
 <div class="the" style="padding:0">
@@ -49,7 +57,9 @@ function link_page($p,$per_page,$q){
         <th style="width:70px">ID</th>
         <th style="width:220px">Tên</th>
         <th>Email</th>
+        <th>Vai trò</th>
         <th style="width:180px">Ngày tạo</th>
+        <th style="width:160px">Hành động</th>
       </tr>
     </thead>
     <tbody>
@@ -58,11 +68,17 @@ function link_page($p,$per_page,$q){
         <td><?= $u['id'] ?></td>
         <td><?= htmlspecialchars($u['ten']) ?></td>
         <td><?= htmlspecialchars($u['email']) ?></td>
-        <td><?= htmlspecialchars($u['ngay_tao']) ?></td>
+        <td><?= htmlspecialchars($u['vai_tro']) ?>
+        </td>
+        <td style="font-variant-numeric:tabular-nums"><?= htmlspecialchars($u['ngay_tao']) ?></td>
+        <td>
+          <a class="nut" href="<?= $base ?>/admin/user_quan_ly.php?hanh_dong=form_sua&id=<?= $u['id'] ?>">✏️</a>
+          <a class="nut" onclick="return confirm('Xóa user này? Hành động không thể hoàn tác.')" href="<?= $base ?>/admin/user_quan_ly.php?hanh_dong=xoa&id=<?= $u['id'] ?>">🗑️</a>
+        </td>
       </tr>
       <?php endforeach; ?>
       <?php if (empty($ds)): ?>
-      <tr><td colspan="4"><i>Không có dữ liệu</i></td></tr>
+      <tr><td colspan="5"><i>Không có dữ liệu</i></td></tr>
       <?php endif; ?>
     </tbody>
   </table>
