@@ -9,7 +9,7 @@ if ($hanh_dong === 'them' && !empty($_POST)) {
   $mo_ta_html = $_POST['mo_ta_html'] ?? '';
   $mo_ta_text = trim(strip_tags($mo_ta_html));
   them_su_kien(
-    $_POST['tieu_de'], $mo_ta_text, $_POST['dia_diem'],
+    $_POST['tieu_de'], $mo_ta_text, $_POST['dia_diem'], $_POST['gia'], $_POST['so_luong'],
     $_POST['thoi_gian_bat_dau'], $_POST['thoi_gian_ket_thuc'],
     $mo_ta_html, $_POST['anh_bia'] ?? null
   );
@@ -20,7 +20,7 @@ if ($hanh_dong === 'sua' && !empty($_POST)) {
   $mo_ta_html = $_POST['mo_ta_html'] ?? '';
   $mo_ta_text = trim(strip_tags($mo_ta_html));
   cap_nhat_su_kien(
-    (int)$_POST['id'], $_POST['tieu_de'], $mo_ta_text, $_POST['dia_diem'],
+    (int)$_POST['id'], $_POST['tieu_de'], $mo_ta_text, $_POST['dia_diem'],$_POST['gia'], $_POST['so_luong'],
     $_POST['thoi_gian_bat_dau'], $_POST['thoi_gian_ket_thuc'],
     $mo_ta_html, $_POST['anh_bia'] ?? null
   );
@@ -62,7 +62,14 @@ include __DIR__ . '/../layout/header.php';
     width: 95%;
 ">
     </div>
-
+    <div class="field">
+      <label>Giá vé</label>
+      <input type="text" name="gia" required value="<?= htmlspecialchars($sua['gia'] ?? '') ?>">
+    </div>
+    <div class="field">
+      <label>Số lượng</label>
+      <input type="text" name="so_luong" required value="<?= htmlspecialchars($sua['so_luong'] ?? '') ?>">
+    </div>
     <div class="field">
       <label>Thời gian bắt đầu</label>
       <input type="datetime-local" name="thoi_gian_bat_dau" required value="<?= dt_local($sua['thoi_gian_bat_dau'] ?? '') ?>">

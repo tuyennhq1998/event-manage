@@ -9,14 +9,32 @@ if (!$su_kien) {
   include __DIR__ . '/../layout/footer.php'; exit;
 }
 
+/* ====== TÍNH TRẠNG THÁI ====== */
 $tt = tinh_trang_thai_su_kien($su_kien['thoi_gian_bat_dau'], $su_kien['thoi_gian_ket_thuc']);
-
-// map ten hien thi trang thai
 $ten_tt = [
   'sap_toi' => 'Sắp tới',
   'dang_dien_ra' => 'Đang diễn ra',
   'da_ket_thuc' => 'Đã kết thúc'
 ][$tt] ?? $tt;
+
+/* ====== LẤY GIÁ & GIỚI HẠN, ĐẾM SỐ NGƯỜI ĐÃ ĐĂNG KÝ ====== */
+$gia = (int)($su_kien['gia'] ?? 0);              // cột int/decimal trong DB
+$gioi_han = (int)($su_kien['so_luong'] ?? 0);     // 0 hoặc NULL xem như không giới hạn
+
+// Đếm số người đã đăng ký
+$stm = $ket_noi->prepare("SELECT COUNT(*) FROM event_registrations WHERE su_kien_id = :id");
+$stm->execute([':id' => $id]);
+$so_da_dk = (int)$stm->fetchColumn();
+
+// Tính còn lại nếu có giới hạn
+$con_lai = ($gioi_han > 0) ? max(0, $gioi_han - $so_da_dk) : null;
+
+// Format tiền VND
+function format_vnd($n){ return $n > 0 ? number_format($n, 0, ',', '.') . ' đ' : 'Miễn phí'; }
+$hien_gia = format_vnd($gia);
+
+// Quyết định cho phép bấm đăng ký
+$cho_phep_dk = ($tt === 'sap_toi') && ($gioi_han <= 0 || $con_lai > 0);
 ?>
 
 <!-- Banner đỏ -->
@@ -24,28 +42,43 @@ $ten_tt = [
   <h1>Chi tiết sự kiện</h1>
 </div>
 
-<div class="chi-tiet-su-kien-header">
+<div class="chi-tiet-su-kien-header" style="text-align:center">
   <h1><?= htmlspecialchars($su_kien['tieu_de']) ?></h1>
   <div class="nho">
-    📍 <b><?= htmlspecialchars($su_kien['dia_diem']) ?></b>
-    &nbsp; | &nbsp;
     🕒 <?= htmlspecialchars($su_kien['thoi_gian_bat_dau']) ?> → <?= htmlspecialchars($su_kien['thoi_gian_ket_thuc']) ?>
+    &nbsp; | &nbsp;
+    📍 <b><?= htmlspecialchars($su_kien['dia_diem']) ?></b>
   </div>
-  <div class="trang-thai">
-    <?php if ($tt === 'sap_toi'): ?>
-      <button class="nut chinh" data-mo-popup data-su-kien-id="<?= $su_kien['id'] ?>">✅ Đăng ký tham gia</button>
-    <?php elseif ($tt === 'dang_dien_ra'): ?>
-      <span class="chip dangdienra">Đang diễn ra</span>
+
+  <!-- Nhóm chip/trạng thái/giá/số lượng -->
+  <div class="trang-thai" style="margin-top:10px; display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap">
+    <!-- Chip giá -->
+    <span class="chip" style="background:#e0f2fe;color:#075985;">💰 <?= htmlspecialchars($hien_gia) ?></span>
+
+    <!-- Chip số lượng -->
+    <?php if ($gioi_han > 0): ?>
+      <span class="chip" style="background:#f3e8ff;color:#6b21a8;">👥 <?= $so_da_dk ?> / <?= $gioi_han ?></span>
     <?php else: ?>
-      <span class="chip daketthuc">Đã kết thúc</span>
+      <span class="chip" style="background:#f1f5f9;color:#0f172a;">👥 <?= $so_da_dk ?> người đã đăng ký </span>
+    <?php endif; ?>
+
+    <!-- Trạng thái / nút -->
+    <?php if ($cho_phep_dk): ?>
+      <button class="nut chinh" data-mo-popup data-su-kien-id="<?= $su_kien['id'] ?>">✅ Đăng ký tham gia</button>
+    <?php else: ?>
+      <?php if ($tt === 'sap_toi' && $gioi_han > 0 && $con_lai === 0): ?>
+        <span class="chip daketthuc" style="background:#fee2e2;color:#991b1b;">Đã đủ chỗ</span>
+      <?php elseif ($tt === 'dang_dien_ra'): ?>
+        <span class="chip dangdienra">Đang diễn ra</span>
+      <?php else: ?>
+        <span class="chip daketthuc">Đã kết thúc</span>
+      <?php endif; ?>
     <?php endif; ?>
   </div>
 </div>
 
 <div class="the">
   <?= $su_kien['mo_ta_html'] ?: nl2br(htmlspecialchars($su_kien['mo_ta'])) ?>
-</div>
-
 </div>
 
 <!-- Popup đăng ký sự kiện -->
@@ -63,7 +96,7 @@ $ten_tt = [
       <input type="email" name="email" required>
       <label>Số điện thoại</label>
       <input type="text" name="so_dien_thoai">
-      <button class="nut chinh" type="submit">📩 Gửi đăng ký</button>
+      <button class="nut chinh" type="submit" <?= $cho_phep_dk ? '' : 'disabled' ?>>📩 Gửi đăng ký</button>
     </form>
   </div>
 </div>

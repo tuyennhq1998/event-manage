@@ -71,19 +71,19 @@ function lay_su_kien_theo_id($id) {
     return $stm->fetch(PDO::FETCH_ASSOC);
 }
 
-function them_su_kien($tieu_de, $mo_ta, $dia_diem, $bat_dau, $ket_thuc, $mo_ta_html=null, $anh_bia=null){
+function them_su_kien($tieu_de, $mo_ta, $dia_diem,$gia, $soluong, $bat_dau, $ket_thuc, $mo_ta_html=null, $anh_bia=null){
     global $ket_noi;
-    $sql = "INSERT INTO events (tieu_de, mo_ta, dia_diem, thoi_gian_bat_dau, thoi_gian_ket_thuc, mo_ta_html, anh_bia)
+    $sql = "INSERT INTO events (tieu_de, mo_ta, dia_diem,gia, so_luong, thoi_gian_bat_dau, thoi_gian_ket_thuc, mo_ta_html, anh_bia)
             VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stm = $ket_noi->prepare($sql);
-    $stm->execute([$tieu_de, $mo_ta, $dia_diem, $bat_dau, $ket_thuc, $mo_ta_html, $anh_bia]);
+    $stm->execute([$tieu_de, $mo_ta, $dia_diem, $gia, $soluong, $bat_dau, $ket_thuc, $mo_ta_html, $anh_bia]);
   }
   
-  function cap_nhat_su_kien($id, $tieu_de, $mo_ta, $dia_diem, $bat_dau, $ket_thuc, $mo_ta_html=null, $anh_bia=null){
+  function cap_nhat_su_kien($id, $tieu_de, $mo_ta, $dia_diem, $gia, $soluong, $bat_dau, $ket_thuc, $mo_ta_html=null, $anh_bia=null){
     global $ket_noi;
-    $sql = "UPDATE events SET tieu_de=?, mo_ta=?, dia_diem=?, thoi_gian_bat_dau=?, thoi_gian_ket_thuc=?, mo_ta_html=?, anh_bia=? WHERE id=?";
+    $sql = "UPDATE events SET tieu_de=?, mo_ta=?, dia_diem=?, gia=?, so_luong=?, thoi_gian_bat_dau=?, thoi_gian_ket_thuc=?, mo_ta_html=?, anh_bia=? WHERE id=?";
     $stm = $ket_noi->prepare($sql);
-    $stm->execute([$tieu_de, $mo_ta, $dia_diem, $bat_dau, $ket_thuc, $mo_ta_html, $anh_bia, $id]);
+    $stm->execute([$tieu_de, $mo_ta, $dia_diem, $gia, $soluong, $bat_dau, $ket_thuc, $mo_ta_html, $anh_bia, $id]);
   }
   
 function xoa_su_kien($id) {
