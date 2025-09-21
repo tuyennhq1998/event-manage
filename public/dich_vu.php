@@ -72,7 +72,7 @@ include __DIR__ . '/../layout/header.php';
 <style>
 .form-loc {
   display: grid;
-  grid-template-columns: 40% 20% 20% auto; /* search | từ | đến | nút */
+  grid-template-columns: 40% 20% 20% 5%; /* search | từ | đến | nút */
   gap: 12px;
   align-items: end;
   background: #fff;
