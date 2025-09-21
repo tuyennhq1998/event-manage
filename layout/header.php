@@ -31,7 +31,7 @@ $user_name = $is_login ? ($_SESSION['user_ten'] ?? 'Bạn') : '';
       <ul class="main-menu">
         <li><a href="<?= $cfg_base_url ?>/public/index.php">Trang chủ</a></li>
         <li><a href="<?= $cfg_base_url ?>/public/dich_vu.php">Dịch vụ</a></li>
-        <li><a href="#">Giới thiệu</a></li>
+        <li><a href="<?= $cfg_base_url ?>/public/gioi_thieu.php">Giới thiệu</a></li>
         <li><a href="<?= $cfg_base_url ?>/public/lien-he.php">Liên hệ</a></li>
       </ul>
 
