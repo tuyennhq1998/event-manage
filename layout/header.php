@@ -11,7 +11,7 @@ $user_name = $is_login ? ($_SESSION['user_ten'] ?? 'Bạn') : '';
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quản lý sự kiện</title>
+<title>EventsPlant</title>
 <link rel="stylesheet" href="<?= $cfg_base_url ?>/assets/style.css">
 </head>
 <body>

@@ -16,9 +16,9 @@ if (!empty($_POST)) {
       if (!empty($cfg_email_admin)) {
         $html = '<p>Có liên hệ mới:</p>'
               . '<p><b>'.$ho_ten.'</b> ('.$email.')'.($sdt? ' - '.$sdt:'').'</p>'
-              . '<p><b>'.$tieu_de.'</b></p>'
+              . '<p><b>'.$tieu_de.'</b></p>'.'<br> <b>Nội dung</b>: <br>'
               . '<div>'.nl2br(htmlspecialchars($noi_dung)).'</div>';
-        @gui_email_don_gian($cfg_email_admin, '[Lien he moi] '.$tieu_de, $html);
+        @gui_email_don_gian($cfg_email_admin, '[Liên hệ mới] '.$tieu_de, $html);
       }
       $tb = 'Gửi liên hệ thành công! Chúng tôi sẽ phản hồi sớm.';
     } else { $loi = 'Không lưu được liên hệ. Vui lòng thử lại.'; }
@@ -55,25 +55,25 @@ include __DIR__ . '/../layout/header.php';
   <form method="post" class="khung-form">
     <div class="nhom">
       <label>Họ tên</label>
-      <input type="text" name="ho_ten" required value="<?= htmlspecialchars($_POST['ho_ten'] ?? '') ?>">
+      <input type="text" name="ho_ten" required value="<?= htmlspecialchars($_POST['ho_ten'] ?? '') ?>" style="width:97%">
     </div>
     <div class="nhom" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div>
         <label>Email</label>
-        <input type="email" name="email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+        <input type="email" name="email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" style="width: 94%;">
       </div>
       <div>
         <label>Số điện thoại</label>
-        <input type="text" name="so_dien_thoai" value="<?= htmlspecialchars($_POST['so_dien_thoai'] ?? '') ?>">
+        <input type="text" name="so_dien_thoai" value="<?= htmlspecialchars($_POST['so_dien_thoai'] ?? '') ?>" style="width: 94%;">
       </div>
     </div>
     <div class="nhom">
       <label>Tiêu đề</label>
-      <input type="text" name="tieu_de" required value="<?= htmlspecialchars($_POST['tieu_de'] ?? '') ?>">
+      <input type="text" name="tieu_de" required value="<?= htmlspecialchars($_POST['tieu_de'] ?? '') ?>" style="width:97%">
     </div>
     <div class="nhom">
       <label>Nội dung</label>
-      <textarea name="noi_dung" required><?= htmlspecialchars($_POST['noi_dung'] ?? '') ?></textarea>
+      <textarea name="noi_dung" required style="width:97%"><?= htmlspecialchars($_POST['noi_dung'] ?? '') ?></textarea>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="nut" type="submit">📨 Gửi liên hệ</button>

@@ -294,7 +294,7 @@ header .hop-header{ padding: 12px 14px; }
   .admin-tab.bao-cao{ background:#10b981; }      /* xanh lá */
   .admin-tab.user{ background:#f59e0b; }         /* cam */
   .admin-tab.cai-dat{ background:black; }         /* cam */
-
+  .admin-tab.lien-he { background: #FF7F7F;}
   .admin-tab.active{ box-shadow:0 6px 20px rgba(0,0,0,.25); }
   
   .admin-noi-dung{

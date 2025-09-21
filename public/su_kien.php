@@ -33,8 +33,36 @@ $con_lai = ($gioi_han > 0) ? max(0, $gioi_han - $so_da_dk) : null;
 function format_vnd($n){ return $n > 0 ? number_format($n, 0, ',', '.') . ' đ' : 'Miễn phí'; }
 $hien_gia = format_vnd($gia);
 
+/* ====== KIỂM TRA USER ĐÃ ĐĂNG KÝ CHƯA ====== */
+$da_dang_ky = false;
+if (isset($_SESSION['user_id'])) {
+    // Nếu có hệ thống đăng nhập với user_id
+    $stm_check = $ket_noi->prepare("SELECT COUNT(*) FROM event_registrations WHERE su_kien_id = :su_kien_id AND user_id = :user_id");
+    $stm_check->execute([
+        ':su_kien_id' => $id,
+        ':user_id' => $_SESSION['user_id']
+    ]);
+    $da_dang_ky = (int)$stm_check->fetchColumn() > 0;
+} elseif (isset($_SESSION['user_email'])) {
+    // Nếu chỉ có email trong session
+    $stm_check = $ket_noi->prepare("SELECT COUNT(*) FROM event_registrations WHERE su_kien_id = :su_kien_id AND email = :email");
+    $stm_check->execute([
+        ':su_kien_id' => $id,
+        ':email' => $_SESSION['user_email']
+    ]);
+    $da_dang_ky = (int)$stm_check->fetchColumn() > 0;
+} elseif (isset($_COOKIE['user_email'])) {
+    // Hoặc kiểm tra qua cookie nếu có
+    $stm_check = $ket_noi->prepare("SELECT COUNT(*) FROM event_registrations WHERE su_kien_id = :su_kien_id AND email = :email");
+    $stm_check->execute([
+        ':su_kien_id' => $id,
+        ':email' => $_COOKIE['user_email']
+    ]);
+    $da_dang_ky = (int)$stm_check->fetchColumn() > 0;
+}
+
 // Quyết định cho phép bấm đăng ký
-$cho_phep_dk = ($tt === 'sap_toi') && ($gioi_han <= 0 || $con_lai > 0);
+$cho_phep_dk = ($tt === 'sap_toi') && ($gioi_han <= 0 || $con_lai > 0) && !$da_dang_ky;
 ?>
 
 <!-- Banner đỏ -->
@@ -64,7 +92,9 @@ $cho_phep_dk = ($tt === 'sap_toi') && ($gioi_han <= 0 || $con_lai > 0);
     <?php endif; ?>
 
     <!-- Trạng thái / nút -->
-    <?php if ($cho_phep_dk): ?>
+    <?php if ($da_dang_ky): ?>
+      <span class="chip" style="background:#dcfce7;color:#166534;">✅ Đã đăng ký</span>
+    <?php elseif ($cho_phep_dk): ?>
       <button class="nut chinh" data-mo-popup data-su-kien-id="<?= $su_kien['id'] ?>">✅ Đăng ký tham gia</button>
     <?php else: ?>
       <?php if ($tt === 'sap_toi' && $gioi_han > 0 && $con_lai === 0): ?>

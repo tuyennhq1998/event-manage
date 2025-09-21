@@ -32,23 +32,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $id = tao_user($ten, $email, $mat_khau);
 
       // gui email chao mung
-      gui_email_don_gian($email, 'Chao mung',
-        '<p>Xin chao <b>' . htmlspecialchars($ten) . '</b>,</p>
-         <p>Tai khoan cua ban da duoc tao thanh cong.</p>
-         <p>Ban co the dang nhap tai: <a href="' . htmlspecialchars($cfg_base_url) . '/public/dang_nhap.php">Dang nhap</a></p>'
+      gui_email_don_gian($email, 'Chào mừng',
+        '<p>Xin chào <b>' . htmlspecialchars($ten) . '</b>,</p>
+         <p>Tài khoản của bạn đã được tạo thành công.</p>
+         <p>Bạn có thể đăng nhập tại : <a href="' . htmlspecialchars($cfg_base_url) . '/public/dang_nhap.php">Đăng nhập</a></p>'
       );
 
-      $tb = 'Dang ky thanh cong! Vui long dang nhap.';
+      $tb = 'Đăng ký tài khoản thành công.';
       $tb_loai = 'ok';
       // reset form
       $ten_input = '';
       $email_input = '';
     } else {
-      $tb = 'Email da ton tai.';
+      $tb = 'Email đã tồn tại.';
       $tb_loai = 'loi';
     }
   } else {
-    $tb = 'Du lieu khong hop le (kiem tra ten, dinh dang email va mat khau >= 4 ky tu).';
+    $tb = 'Dữ liệu không hợp lệ (kiểm tra tên, định dạng email và mật khẩu >= 4 ký tự).';
     $tb_loai = 'loi';
   }
 }

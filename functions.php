@@ -40,18 +40,57 @@ function bat_buoc_dang_nhap() {
 function bat_buoc_admin() {
     bat_buoc_dang_nhap();
     if (($_SESSION['user_vai_tro'] ?? 'user') !== 'admin') {
-        die('Ban khong co quyen truy cap trang nay');
+        die('Bạn không có quyền truy cập trang này');
     }
 }
 
 function gui_email_don_gian($to, $subject, $message) {
-    // Gửi email bằng mail(). Nếu host không hỗ trợ, thay bằng PHPMailer.
-    global $cfg_email_from;
-    $headers = 'From: ' . $cfg_email_from . "\r\n" .
-               'Reply-To: ' . $cfg_email_from . "\r\n" .
-               'MIME-Version: 1.0' . "\r\n" .
-               'Content-type: text/html; charset=utf-8' . "\r\n";
-    @mail($to, $subject, $message, $headers);
+  global $cfg_email_from, $cfg_email_pass, $cfg_email_host, $cfg_email_port;
+
+  // Require PHPMailer LAZY, đúng path cài thủ công (repo gốc)
+  $base = __DIR__ . '/vendor/PHPMailer/src';
+  if (!is_file("$base/PHPMailer.php") || !is_file("$base/SMTP.php") || !is_file("$base/Exception.php")) {
+      error_log("PHPMailer files not found in $base");
+      return false;
+  }
+  require_once "$base/PHPMailer.php";
+  require_once "$base/SMTP.php";
+  require_once "$base/Exception.php";
+
+  // import class sau khi require
+  if (!class_exists('\PHPMailer\PHPMailer\PHPMailer')) {
+      error_log("PHPMailer class not found after require");
+      return false;
+  }
+  $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+
+  try {
+      $mail->isSMTP();
+      $mail->Host       = $cfg_email_host ?: 'smtp.gmail.com';
+      $mail->SMTPAuth   = true;
+      $mail->Username   = $cfg_email_from;   // Gmail
+      $mail->Password   = $cfg_email_pass;   // App password
+      $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+      $mail->Port       = $cfg_email_port ?: 587;
+      $mail->CharSet  = 'UTF-8';
+      $mail->Encoding = 'base64';
+
+      $mail->setFrom($cfg_email_from ?: 'no-reply@example.com', 'EventsPlant');
+      $mail->addAddress($to);
+
+      $mail->isHTML(true);
+      $mail->Subject = $subject;
+      $mail->Body    = $message;
+
+      $mail->send();
+      return true;
+  } catch (\PHPMailer\PHPMailer\Exception $e) {
+      error_log("Mailer Error: {$mail->ErrorInfo}");
+      return false;
+  } catch (\Throwable $e) {
+      error_log("Mailer Throwable: " . $e->getMessage());
+      return false;
+  }
 }
 
 function tinh_trang_thai_su_kien($bat_dau, $ket_thuc) {
@@ -193,4 +232,3 @@ function tao_lien_he($ho_ten, $email, $so_dien_thoai, $tieu_de, $noi_dung){
     $stm = $ket_noi->prepare("DELETE FROM contacts WHERE id=:id");
     return $stm->execute([':id'=>$id]);
   }
-  

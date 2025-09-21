@@ -55,12 +55,13 @@ function link_page($p,$per,$q){ return '?'.http_build_query(['page'=>$p,'per_pag
           <?php endif; ?>
         </td>
         <td>
-          <button class="nut xem-lh" data-id="<?= (int)$r['id'] ?>">👁️ Xem</button>
-          <?php if ($r['trang_thai']==='moi'): ?>
-            <button class="nut phu xl-lh" data-id="<?= (int)$r['id'] ?>">✅ Đánh dấu xử lý</button>
-          <?php endif; ?>
-          <button class="nut xoa-lh" data-id="<?= (int)$r['id'] ?>">🗑️ Xóa</button>
-        </td>
+  <button class="nut xem-lh" type="button" data-id="<?= (int)$r['id'] ?>">👁️ Xem</button>
+  <?php if ($r['trang_thai']==='moi'): ?>
+    <button class="nut phu xl-lh" type="button" data-id="<?= (int)$r['id'] ?>">✅ Đánh dấu xử lý</button>
+  <?php endif; ?>
+  <button class="nut xoa-lh" type="button" data-id="<?= (int)$r['id'] ?>">🗑️ Xóa</button>
+</td>
+
       </tr>
       <?php endforeach; ?>
       <?php if (empty($ds)): ?>
@@ -83,85 +84,103 @@ function link_page($p,$per,$q){ return '?'.http_build_query(['page'=>$p,'per_pag
   </div>
 </div>
 
-<!-- Modal overlay (tái dùng overlay admin có sẵn nếu bạn đã dùng) -->
-<div class="popup_nen" id="lh-overlay" style="display:none">
-  <div class="popup_hop" style="max-width:720px">
+<!-- Overlay riêng cho Liên hệ (KHÔNG dùng popup_nen để tránh va chạm) -->
+<div class="lh-overlay" id="lh-overlay" style="display:none">
+  <div class="lh-box">
     <div class="hang" style="justify-content:space-between;align-items:center;margin-bottom:8px">
       <h3 style="margin:0">Chi tiết liên hệ</h3>
-      <button class="nut phu" data-dong-lh>✖</button>
+      <button class="nut phu" type="button" data-dong-lh>✖</button>
     </div>
     <div id="lh-noi-dung" class="nho">Đang tải…</div>
   </div>
 </div>
 
+<style>
+/* Cô lập style cho overlay Liên hệ */
+.lh-overlay{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 9999;
+}
+.lh-overlay .lh-box{
+  background:#fff; color:#111;
+  border-radius:12px; padding:14px;
+  max-width:720px; width:clamp(320px, 92vw, 720px);
+  margin: 8vh auto; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+}
+</style>
+
 <script>
-// Delegation cho xem / xử lý / xóa
 document.addEventListener('click', async function(e){
   const xem = e.target.closest('.xem-lh');
   const xl  = e.target.closest('.xl-lh');
   const xoa = e.target.closest('.xoa-lh');
-
+  console.log('aaa');
+  // Xem chi tiết
   if (xem){
+    e.preventDefault();
     const id = xem.dataset.id;
+    const overlay = document.getElementById('lh-overlay');
     const box = document.getElementById('lh-noi-dung');
-    document.getElementById('lh-overlay').style.display='block';
+    overlay.style.display='block';
     box.textContent = 'Đang tải…';
     try{
-      const res = await fetch('<?= $base ?>/admin/lien_he_xem.php?id='+id, {credentials:'same-origin'});
+      const res = await fetch(base+'/admin/lien_he_xem.php?id='+id, {credentials:'same-origin'});
       box.innerHTML = await res.text();
     }catch(err){
       box.innerHTML = '<p style="color:red">Không tải được chi tiết.</p>';
     }
   }
 
+  // Đóng overlay
   if (e.target.matches('[data-dong-lh]')){
     document.getElementById('lh-overlay').style.display='none';
   }
 
+  // Đánh dấu xử lý
   if (xl){
+    e.preventDefault();
     const id = xl.dataset.id;
     if (!confirm('Đánh dấu đã xử lý liên hệ #'+id+'?')) return;
-    try{
-      await fetch('<?= $base ?>/admin/lien_he_action.php', {
-        method:'POST',
-        headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        credentials: 'same-origin',                     // <<< THÊM DÒNG NÀY
-        body: new URLSearchParams({hanh_dong:'xu_ly', id})
-      });
-      // reload tab
-      if (typeof window.loadAdminTab==='function'){
-        window.loadAdminTab('lien-he', <?= (int)$page ?>);
-      }
-    }catch(e){}
+    const res = await fetch(base+'/admin/lien_he_action.php', {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body: 'hanh_dong=xu_ly&id='+encodeURIComponent(id)
+    });
+    if (res.ok){
+      loadAdminTab('lien-he', <?= (int)$page ?>);
+    }
   }
 
+  // Xóa liên hệ
   if (xoa){
+    e.preventDefault();
     const id = xoa.dataset.id;
     if (!confirm('Xóa liên hệ #'+id+'?')) return;
-    try{
-      await fetch('<?= $base ?>/admin/lien_he_action.php', {
-        method:'POST',
-        headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        credentials: 'same-origin',                     // <<< THÊM DÒNG NÀY
-        body: new URLSearchParams({hanh_dong:'xoa', id})
-      });
-      if (typeof window.loadAdminTab==='function'){
-        window.loadAdminTab('lien-he', <?= (int)$page ?>);
-      }
-    }catch(e){}
+    const res = await fetch(base+'/admin/lien_he_action.php', {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body: 'hanh_dong=xoa&id='+encodeURIComponent(id)
+    });
+    if (res.ok){
+      loadAdminTab('lien-he', <?= (int)$page ?>);
+    }
   }
 });
 
-// submit và input tìm kiếm (đồng bộ như các tab khác)
+// Submit search form (AJAX)
 document.addEventListener('submit', function(e){
   const f = e.target.closest('#tim_lien_he'); if (!f) return;
   e.preventDefault();
-  if (typeof window.loadAdminTab==='function') window.loadAdminTab('lien-he', 1);
+  loadAdminTab('lien-he', 1);
 });
+
+// Input search (debounce)
 let timer=null;
 document.addEventListener('input', function(e){
   if (!e.target.closest('#tim_lien_he')) return;
   clearTimeout(timer);
-  timer = setTimeout(()=> { if (typeof window.loadAdminTab==='function') window.loadAdminTab('lien-he', 1); }, 400);
+  timer = setTimeout(()=> loadAdminTab('lien-he', 1), 400);
 });
 </script>
+

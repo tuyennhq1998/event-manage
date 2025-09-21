@@ -258,5 +258,97 @@ document.addEventListener('submit', async function(e){
   }
 });
 </script>
+<script>
+const base = "<?= $cfg_base_url ?>"; // đảm bảo có base toàn cục
+
+// Ngăn overlay bị đóng/ reload bởi handler khác
+document.addEventListener('click', async function(e){
+  // ---- Xem chi tiết ----
+  const btnXem = e.target.closest('.xem-lh');
+  if (btnXem){
+    e.preventDefault();
+    e.stopPropagation(); // chặn bubble tới handler khác
+
+    const id = btnXem.dataset.id;
+    const overlay = document.getElementById('lh-overlay');
+    const box = document.getElementById('lh-noi-dung');
+    if (!overlay || !box) return;
+    overlay.style.display='block';
+    box.textContent='Đang tải…';
+
+    try{
+      // GỌI ĐÚNG TÊN FILE BẠN ĐANG CÓ:
+      const res = await fetch(`${base}/admin/lien_he_xem.php?id=${encodeURIComponent(id)}`, {credentials:'same-origin'});
+      const html = await res.text();
+      box.innerHTML = html.trim() ? html : '<p style="color:#991b1b">Không có dữ liệu.</p>';
+    }catch(err){
+      box.innerHTML = `<p style="color:#991b1b">Không tải được chi tiết: ${err.message}</p>`;
+    }
+
+    return;
+  }
+
+  // ---- Đóng overlay ----
+  if (e.target.matches('[data-dong-lh]')){
+    e.preventDefault();
+    e.stopPropagation();
+    const overlay = document.getElementById('lh-overlay');
+    if (overlay) overlay.style.display='none';
+    return;
+  }
+
+  // Nhấp nền overlay thì KHÔNG đóng (tránh lỡ tay)
+  const clickOnOverlay = e.target.classList && e.target.classList.contains('lh-overlay');
+  if (clickOnOverlay){
+    e.stopPropagation(); // chỉ chặn, không đóng
+    return;
+  }
+
+  // ---- Đánh dấu xử lý ----
+  const btnXL = e.target.closest('.xl-lh');
+  if (btnXL){
+    e.preventDefault(); e.stopPropagation();
+    const id = btnXL.dataset.id;
+    if (!confirm('Đánh dấu đã xử lý liên hệ #'+id+'?')) return;
+
+    try{
+      const res = await fetch(`${base}/admin/lien_he_action.php`, {
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        credentials:'same-origin',
+        body: new URLSearchParams({hanh_dong:'xu_ly', id})
+      });
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      if (typeof window.loadAdminTab==='function') window.loadAdminTab('lien-he');
+    }catch(err){
+      alert('Không thực hiện được: '+err.message);
+    }
+    return;
+  }
+
+  // ---- Xóa ----
+  const btnXoa = e.target.closest('.xoa-lh');
+  if (btnXoa){
+    e.preventDefault(); e.stopPropagation();
+    const id = btnXoa.dataset.id;
+    if (!confirm('Xóa liên hệ #'+id+'?')) return;
+
+    try{
+      const res = await fetch(`${base}/admin/lien_he_action.php`, {
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        credentials:'same-origin',
+        body: new URLSearchParams({hanh_dong:'xoa', id})
+      });
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      if (typeof window.loadAdminTab==='function') window.loadAdminTab('lien-he');
+    }catch(err){
+      alert('Không thực hiện được: '+err.message);
+    }
+    return;
+  }
+});
+</script>
+
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>
