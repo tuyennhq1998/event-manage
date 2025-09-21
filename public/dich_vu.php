@@ -72,7 +72,7 @@ include __DIR__ . '/../layout/header.php';
 <style>
 .form-loc {
   display: grid;
-  grid-template-columns: 40% 20% 20% 5%; /* search | từ | đến | nút */
+  grid-template-columns: 50% 20% 20% 7%; /* search | từ | đến | nút */
   gap: 12px;
   align-items: end;
   background: #fff;
@@ -112,7 +112,10 @@ include __DIR__ . '/../layout/header.php';
       <input type="date" name="den_ngay" value="<?= htmlspecialchars($den_ngay) ?>">
     </div>
     <div class="nhom">
-      <button class="nut" type="submit">🔎 Lọc</button>
+      <button class="nut" type="submit" style="
+    margin-left: 20px;
+    margin-bottom: 15px;
+">🔎 Lọc</button>
     </div>
   </form>
 
