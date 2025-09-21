@@ -1,4 +1,7 @@
-<?php include __DIR__ . '/../layout/header.php'; ?>
+<?php
+require_once __DIR__ . '/../functions.php';
+include __DIR__ . '/../layout/header.php';
+?>
     <style>
         .hero-section {
             height: 100vh;
@@ -229,7 +232,7 @@
 Trang web EventsPlant là nền tảng quản lý sự kiện toàn diện, giúp doanh nghiệp, tổ chức và cá nhân dễ dàng tổ chức, theo dõi và tối ưu hóa mọi hoạt động liên quan đến sự kiện. Với giao diện trực quan, thao tác đơn giản và các tính năng hiện đại như quản lý khách mời, lịch trình, vé mời và báo cáo thống kê, EventsPlant mang đến giải pháp nhanh chóng, tiết kiệm thời gian và chi phí. Chúng tôi cam kết đồng hành cùng bạn để mỗi sự kiện không chỉ diễn ra suôn sẻ mà còn để lại ấn tượng chuyên nghiệp, thành công vượt trội.
 
             </h2>
-            <a href="#services" class="cta-button">Dịch vụ</a>
+            <a href="<?= $cfg_base_url ?>/public/dich_vu.php" class="cta-button">Dịch vụ</a>
         </div>
             </section>
 
@@ -250,12 +253,6 @@ Trang web EventsPlant là nền tảng quản lý sự kiện toàn diện, giú
         }
 
         // Smooth scrolling for CTA button
-        document.querySelector('.cta-button').addEventListener('click', function(e) {
-            e.preventDefault();
-            // You can add your navigation logic here
-            console.log('Navigate to services section');
-        });
-
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
