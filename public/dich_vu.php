@@ -105,11 +105,11 @@ include __DIR__ . '/../layout/header.php';
     </div>
     <div class="nhom">
       <label>Từ ngày</label>
-      <input type="date" name="tu_ngay" value="<?= htmlspecialchars($tu_ngay) ?>">
+      <input type="date" name="tu_ngay" value="<?= htmlspecialchars($tu_ngay) ?>"  width="95%">
     </div>
     <div class="nhom">
       <label>Đến ngày</label>
-      <input type="date" name="den_ngay" value="<?= htmlspecialchars($den_ngay) ?>">
+      <input type="date" name="den_ngay" value="<?= htmlspecialchars($den_ngay) ?>" width="95%">
     </div>
     <div class="nhom">
       <button class="nut" type="submit" style="
