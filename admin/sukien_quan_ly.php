@@ -71,11 +71,11 @@ include __DIR__ . '/../layout/header.php';
     </div>
     <div class="field">
       <label>Giá vé</label>
-      <input type="text" name="gia" required value="<?= htmlspecialchars($sua['gia'] ?? '') ?>">
+      <input type="number" name="gia" required value="<?= htmlspecialchars($sua['gia'] ?? '') ?>">
     </div>
     <div class="field">
       <label>Số lượng</label>
-      <input type="text" name="so_luong" required value="<?= htmlspecialchars($sua['so_luong'] ?? '') ?>">
+      <input type="number" name="so_luong" required value="<?= htmlspecialchars($sua['so_luong'] ?? '') ?>">
     </div>
     <div class="field">
       <label>Thời gian bắt đầu</label>
