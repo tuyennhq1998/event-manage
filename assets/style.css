@@ -244,7 +244,7 @@ header .hop-header{ padding: 12px 14px; }
     width: 100%;
     height: auto;
     border-radius: 15px; /* Nhỏ hơn container 1px để tránh overflow */
-    object-fit: cover; /* Giữ tỉ lệ ảnh */
+    object-fit: fill; /* Giữ tỉ lệ ảnh */
     text-align: center;
     display: block;
 }
