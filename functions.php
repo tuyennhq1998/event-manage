@@ -97,3 +97,8 @@ function banners_all() {
     $stm = $ket_noi->prepare("DELETE FROM banners WHERE id=:id");
     return $stm->execute([':id'=>(int)$id]);
   }
+  function tao_qr_qrserver($text, $size = 300) {
+    $sz = intval($size);
+    $data = rawurlencode($text);
+    return "https://api.qrserver.com/v1/create-qr-code/?size={$sz}x{$sz}&data={$data}";
+}

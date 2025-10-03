@@ -20,6 +20,8 @@ $cfg_email_host = 'smtp.gmail.com';
 $cfg_email_port = 587;                     // TLS
 $cfg_email_admin = 'tuyennhq@gmail.com';      // Email nhận thông báo
 
+$bank    = 'vcb';
+$acc = '9772781926';
 
 // Bắt đầu session cho toàn dự án
 if (session_status() === PHP_SESSION_NONE) {
