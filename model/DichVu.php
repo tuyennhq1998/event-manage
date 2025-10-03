@@ -32,7 +32,7 @@ class SuKien {
     function them_su_kien($tieu_de, $mo_ta, $dia_diem,$gia, $soluong, $bat_dau, $ket_thuc, $mo_ta_html=null, $anh_bia=null){
         global $ket_noi;
         $sql = "INSERT INTO events (tieu_de, mo_ta, dia_diem,gia, so_luong, thoi_gian_bat_dau, thoi_gian_ket_thuc, mo_ta_html, anh_bia)
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+                VALUES (?, ?, ?, ?, ?, ?, ?,?,?)";
         $stm = $ket_noi->prepare($sql);
         $stm->execute([$tieu_de, $mo_ta, $dia_diem, $gia, $soluong, $bat_dau, $ket_thuc, $mo_ta_html, $anh_bia]);
       }
