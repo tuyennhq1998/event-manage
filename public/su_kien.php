@@ -134,5 +134,96 @@ $cho_phep_dk = ($tt === 'sap_toi') && ($gioi_han <= 0 || $con_lai > 0) && !$da_d
     </form>
   </div>
 </div>
+<script>
+(function(){
+  const form = document.getElementById('form_dang_ky_su_kien');
+  if(!form) return;
 
-<?php include __DIR__ . '/../layout/footer.php'; ?>
+  // Kiểm tra đã có listener chưa để tránh đăng ký nhiều lần
+  if(form.dataset.listenerAdded === 'true') return;
+  form.dataset.listenerAdded = 'true';
+
+  let dangGui = false; // cờ chống double submit
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    e.stopPropagation(); // Ngăn event bubble lên parent
+    e.stopImmediatePropagation(); // Ngăn các handler khác trên cùng element
+
+    const btn = form.querySelector('button[type="submit"]');
+    
+    // Kiểm tra đã đang gửi hoặc button đã disabled
+    if (dangGui || (btn && btn.disabled)) {
+      console.log('Đang xử lý, vui lòng chờ...');
+      return false;
+    }
+
+    dangGui = true; // Khóa ngay lập tức
+    
+    if (btn){ 
+      btn.disabled = true; 
+      btn.classList.add('loading');
+      btn.textContent = '⏳ Đang gửi...'; // Feedback trực quan
+    }
+
+    try{
+      const data = new FormData(form);
+      const res  = await fetch(form.action, { 
+        method:'POST', 
+        body:data, 
+        credentials:'same-origin',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest' // Đánh dấu là AJAX request
+        }
+      });
+      
+      if(!res.ok) throw new Error('Network response was not ok');
+      
+      const txt  = await res.text();
+      const kq   = JSON.parse(txt);
+
+      if (kq.thanh_cong){
+        alert(kq.thong_bao || 'Đăng ký thành công!');
+        form.reset();
+        
+        // Đóng popup
+        const popup = document.querySelector('.popup_nen');
+        if (popup) popup.style.display = 'none';
+        
+        // Reload trang sau 1s để cập nhật trạng thái
+        setTimeout(() => window.location.reload(), 1000);
+        
+        return false; // GIỮ dangGui=true, không cho submit lại
+      } else {
+        alert(kq.thong_bao || 'Có lỗi xảy ra!');
+        // Cho phép thử lại khi có lỗi logic
+        dangGui = false;
+        if (btn){ 
+          btn.disabled = false; 
+          btn.classList.remove('loading');
+          btn.textContent = '📩 Gửi đăng ký';
+        }
+      }
+    } catch(err){
+      console.error('Lỗi:', err);
+      alert('Lỗi kết nối: ' + err.message);
+      // Cho phép thử lại khi lỗi mạng/parse
+      dangGui = false;
+      if (btn){ 
+        btn.disabled = false; 
+        btn.classList.remove('loading');
+        btn.textContent = '📩 Gửi đăng ký';
+      }
+    }
+
+    return false; // Đảm bảo không submit form theo cách thông thường
+  }, { passive:false, once:false }); // Bỏ once:true vì cần handle nhiều lần nếu có lỗi
+
+  // Thêm validation trước khi submit
+  form.addEventListener('invalid', (e) => {
+    e.preventDefault();
+    dangGui = false; // Reset nếu form invalid
+  }, true);
+
+})();
+</script><?php include __DIR__ . '/../layout/footer.php'; ?>
