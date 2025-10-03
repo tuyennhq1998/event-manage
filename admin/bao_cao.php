@@ -27,13 +27,13 @@ include __DIR__ . '/../layout/header.php';
             <th>So nguoi tham gia</th>
         </tr>
         <?php foreach ($rows as $r): ?>
-        <tr>
-            <td><?= $r['id'] ?></td>
-            <td><?= htmlspecialchars($r['tieu_de']) ?></td>
-            <td><?= htmlspecialchars($r['thoi_gian_bat_dau']) ?> → <?= htmlspecialchars($r['thoi_gian_ket_thuc']) ?>
-            </td>
-            <td><b><?= (int)$r['so_nguoi'] ?></b></td>
-        </tr>
+            <tr>
+                <td><?= $r['id'] ?></td>
+                <td><?= htmlspecialchars($r['tieu_de']) ?></td>
+                <td><?= htmlspecialchars($r['thoi_gian_bat_dau']) ?> → <?= htmlspecialchars($r['thoi_gian_ket_thuc']) ?>
+                </td>
+                <td><b><?= (int) $r['so_nguoi'] ?></b></td>
+            </tr>
         <?php endforeach; ?>
     </table>
 </div>

@@ -11,13 +11,16 @@ $user->bat_buoc_admin();
 $hanh_dong = $_POST['hanh_dong'] ?? '';
 $id        = (int)($_POST['id'] ?? 0);
 
-if ($id<=0){ http_response_code(400); exit('id khong hop le'); }
+if ($id <= 0) {
+  http_response_code(400);
+  exit('id khong hop le');
+}
 
-if ($hanh_dong==='xu_ly'){
+if ($hanh_dong === 'xu_ly') {
   $contact->cap_nhat_trang_thai_lh($id, 'da_xu_ly');
   exit('ok');
 }
-if ($hanh_dong==='xoa'){
+if ($hanh_dong === 'xoa') {
   $contact->xoa_lien_he($id);
   exit('ok');
 }
