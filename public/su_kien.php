@@ -150,7 +150,11 @@ $cho_phep_dk = ($tt === 'sap_toi') && ($gioi_han <= 0 || $con_lai > 0) && !$da_d
         </button>
 
         <?php elseif ($cho_phep_dk): ?>
+        <?php if (isset($_SESSION['user_id'])): ?>
         <button class="nut chinh" data-mo-popup data-su-kien-id="<?= $su_kien['id'] ?>">✅ Đăng ký tham gia</button>
+        <?php else: ?>
+        <a href="<?= $cfg_base_url ?>/public/dang_nhap.php" class="nut chinh">✅ Đăng nhập để đăng ký</a>
+        <?php endif; ?>
         <?php else: ?>
         <?php if ($tt === 'sap_toi' && $gioi_han > 0 && $con_lai === 0): ?>
         <span class="chip daketthuc" style="background:#fee2e2;color:#991b1b;">Đã đủ chỗ</span>
