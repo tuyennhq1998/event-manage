@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../functions.php';
+require_once __DIR__ . '/../model/User.php';
+
+$user = new User($ket_noi);
 
 // Lấy logo nếu có (từ bảng options)
 if (!function_exists('get_option')) {
@@ -19,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $mat_khau = trim($_POST['mat_khau'] ?? '');
   $email_input = $email; // giữ lại email khi lỗi
 
-  if (dang_nhap($email, $mat_khau)) {
+  if ($user->dang_nhap($email, $mat_khau)) {
     header('Location: ' . $cfg_base_url . '/public/index.php');
     exit;
   } else {

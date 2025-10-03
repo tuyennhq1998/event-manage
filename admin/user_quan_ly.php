@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../functions.php';
-bat_buoc_admin();
+require_once __DIR__ . '/../model/User.php';
+
+$user = new User($ket_noi);
+
+$user->bat_buoc_admin();
 
 $base = $cfg_base_url;
 
@@ -25,7 +29,7 @@ if (!function_exists('tao_user')) {
   function tao_user($ten, $email, $mat_khau, $vai_tro = 2){
     global $ket_noi;
     $hash = password_hash($mat_khau, PASSWORD_BCRYPT);
-    $stm = $ket_noi->prepare("INSERT INTO users(ten,email,mat_khau,vai_tro,ngay_tao) VALUES(:t,:e,:mk,:vr,NOW())");
+    $stm = $ket_noi->prepare("INSERT INTO users(ten,email,mat_khau_hash,vai_tro,ngay_tao) VALUES(:t,:e,:mk,:vr,NOW())");
     $stm->execute([':t'=>$ten, ':e'=>$email, ':mk'=>$hash, ':vr'=>$vai_tro]);
     return (int)$ket_noi->lastInsertId();
   }

@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../functions.php';
+require_once __DIR__ . '/../model/DichVu.php';
+$dv = new SuKien($ket_noi);
+
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
@@ -16,10 +19,10 @@ try {
     json_fail('Du lieu khong hop le');
   }
 
-  $su_kien = lay_su_kien_theo_id($su_kien_id);
+  $su_kien = $dv->lay_su_kien_theo_id($su_kien_id);
   if (!$su_kien) json_fail('Khong tim thay su kien', 404);
 
-  $tt = tinh_trang_thai_su_kien($su_kien['thoi_gian_bat_dau'], $su_kien['thoi_gian_ket_thuc']);
+  $tt = $dv->tinh_trang_thai_su_kien($su_kien['thoi_gian_bat_dau'], $su_kien['thoi_gian_ket_thuc']);
   if ($tt !== 'sap_toi') json_fail('Su kien khong con mo dang ky', 409);
 
   // Luu dang ky

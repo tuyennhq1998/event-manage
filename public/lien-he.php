@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../functions.php';
+require_once __DIR__ . '/../model/Contact.php';
+$contact = new Contact($ket_noi);
 
 $tb = ''; $loi = '';
 
@@ -11,7 +13,7 @@ if (!empty($_POST)) {
   $noi_dung = trim($_POST['noi_dung'] ?? '');
 
   if ($ho_ten && filter_var($email, FILTER_VALIDATE_EMAIL) && $tieu_de && $noi_dung){
-    if (tao_lien_he($ho_ten,$email,$sdt,$tieu_de,$noi_dung)){
+    if ($contact->tao_lien_he($ho_ten,$email,$sdt,$tieu_de,$noi_dung)){
       // gửi email cho admin (nếu cấu hình)
       if (!empty($cfg_email_admin)) {
         $html = '<p>Có liên hệ mới:</p>'

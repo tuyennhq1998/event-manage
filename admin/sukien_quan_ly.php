@@ -1,6 +1,13 @@
 <?php
 require_once __DIR__ . '/../functions.php';
-bat_buoc_admin();
+require_once __DIR__ . '/../model/DichVu.php';
+require_once __DIR__ . '/../model/User.php';
+
+$dv = new SuKien($ket_noi);
+$user = new User($ket_noi);
+
+
+$user->bat_buoc_admin();
 
 $hanh_dong = $_POST['hanh_dong'] ?? $_GET['hanh_dong'] ?? '';
 
@@ -8,7 +15,7 @@ if ($hanh_dong === 'them' && !empty($_POST)) {
   // mo_ta: bản text ngắn để fallback tìm kiếm; rút từ html
   $mo_ta_html = $_POST['mo_ta_html'] ?? '';
   $mo_ta_text = trim(strip_tags($mo_ta_html));
-  them_su_kien(
+  $dv->them_su_kien(
     $_POST['tieu_de'], $mo_ta_text, $_POST['dia_diem'], $_POST['gia'], $_POST['so_luong'],
     $_POST['thoi_gian_bat_dau'], $_POST['thoi_gian_ket_thuc'],
     $mo_ta_html, $_POST['anh_bia'] ?? null
@@ -19,7 +26,7 @@ if ($hanh_dong === 'them' && !empty($_POST)) {
 if ($hanh_dong === 'sua' && !empty($_POST)) {
   $mo_ta_html = $_POST['mo_ta_html'] ?? '';
   $mo_ta_text = trim(strip_tags($mo_ta_html));
-  cap_nhat_su_kien(
+  $dv->cap_nhat_su_kien(
     (int)$_POST['id'], $_POST['tieu_de'], $mo_ta_text, $_POST['dia_diem'],$_POST['gia'], $_POST['so_luong'],
     $_POST['thoi_gian_bat_dau'], $_POST['thoi_gian_ket_thuc'],
     $mo_ta_html, $_POST['anh_bia'] ?? null
@@ -28,13 +35,13 @@ if ($hanh_dong === 'sua' && !empty($_POST)) {
 }
 
 if ($hanh_dong === 'xoa' && isset($_GET['id'])) {
-  xoa_su_kien((int)$_GET['id']);
+  $dv->xoa_su_kien((int)$_GET['id']);
   header('Location: '.$_SERVER['PHP_SELF']); exit;
 }
 
 $sua = null;
 if (($hanh_dong === 'form_sua') && isset($_GET['id'])) {
-  $sua = lay_su_kien_theo_id((int)$_GET['id']);
+  $sua = $dv->lay_su_kien_theo_id((int)$_GET['id']);
 }
 
 function dt_local($s){ return $s ? date('Y-m-d\TH:i', strtotime($s)) : ''; }

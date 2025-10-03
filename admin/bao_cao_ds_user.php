@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../functions.php';
-bat_buoc_admin();
+require_once __DIR__ . '/../model/User.php';
+$user = new User($ket_noi);
+
+$user->bat_buoc_admin();
+
 header('Content-Type: text/html; charset=utf-8');
 
 /* schema */

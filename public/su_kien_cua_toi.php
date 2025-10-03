@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../functions.php';
-bat_buoc_dang_nhap();
+require_once __DIR__ . '/../model/User.php';
+
+$user = new User($ket_noi);
+
+$user->bat_buoc_dang_nhap();
 
 $uid = (int)($_SESSION['user_id'] ?? 0);
 

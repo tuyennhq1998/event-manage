@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/../functions.php';
-bat_buoc_admin();
+require_once __DIR__ . '/../model/User.php';
+require_once __DIR__ . '/../model/Contact.php';
+$contact = new Contact($ket_noi);
+$user = new User($ket_noi);
+
+$user->bat_buoc_admin();
 
 $base = $cfg_base_url;
 
@@ -10,9 +15,9 @@ $page     = max(1,(int)($_GET['page'] ?? 1));
 $q        = trim($_GET['q'] ?? '');
 $offset   = ($page-1)*$per_page;
 
-$tong  = dem_lien_he($q);
+$tong  = $contact->dem_lien_he($q);
 $pages = max(1, (int)ceil($tong/$per_page));
-$ds    = danh_sach_lien_he($page,$per_page,$q);
+$ds    = $contact->danh_sach_lien_he($page,$per_page,$q);
 
 function link_page($p,$per,$q){ return '?'.http_build_query(['page'=>$p,'per_page'=>$per,'q'=>$q]); }
 ?>

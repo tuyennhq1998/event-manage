@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../functions.php';
+require_once __DIR__ . '/../model/User.php';
 
+$user = new User($ket_noi);
 // Lay logo neu co (tu options) - dung ham get_option ban co san
 if (!function_exists('get_option')) {
   function get_option($key) {
@@ -27,9 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email_input = $email;
 
   if ($ten && filter_var($email, FILTER_VALIDATE_EMAIL) && strlen($mat_khau) >= 4) {
-    if (!tim_user_theo_email($email)) {
+    if (!$user->tim_user_theo_email($email)) {
       // GOI HAM tao_user KHONG dung named argument
-      $id = tao_user($ten, $email, $mat_khau);
+      $id = $user->tao_user($ten, $email, $mat_khau);
 
       // gui email chao mung
       gui_email_don_gian($email, 'Chào mừng',

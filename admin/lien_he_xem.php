@@ -1,9 +1,15 @@
 <?php
 require_once __DIR__ . '/../functions.php';
-bat_buoc_admin();
+require_once __DIR__ . '/../model/User.php';
+require_once __DIR__ . '/../model/Contact.php';
+$contact = new Contact($ket_noi);
+
+$user = new User($ket_noi);
+
+$user->bat_buoc_admin();
 
 $id = (int)($_GET['id'] ?? 0);
-$lh = $id ? lien_he_theo_id($id) : null;
+$lh = $id ? $contact->lien_he_theo_id($id) : null;
 
 if (!$lh){
   http_response_code(404);

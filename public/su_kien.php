@@ -1,16 +1,19 @@
 <?php
 require_once __DIR__ . '/../functions.php';
+require_once __DIR__ . '/../model/DichVu.php';
+$dv = new SuKien($ket_noi);
+
 include __DIR__ . '/../layout/header.php';
 
 $id = (int)($_GET['id'] ?? 0);
-$su_kien = lay_su_kien_theo_id($id);
+$su_kien = $dv->lay_su_kien_theo_id($id);
 if (!$su_kien) {
   echo '<p>❌ Khong tim thay su kien.</p>';
   include __DIR__ . '/../layout/footer.php'; exit;
 }
 
 /* ====== TÍNH TRẠNG THÁI ====== */
-$tt = tinh_trang_thai_su_kien($su_kien['thoi_gian_bat_dau'], $su_kien['thoi_gian_ket_thuc']);
+$tt = $dv->tinh_trang_thai_su_kien($su_kien['thoi_gian_bat_dau'], $su_kien['thoi_gian_ket_thuc']);
 $ten_tt = [
   'sap_toi' => 'Sắp tới',
   'dang_dien_ra' => 'Đang diễn ra',

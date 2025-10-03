@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . '/../functions.php';
-bat_buoc_admin();
+require_once __DIR__ . '/../model/DichVu.php';
+require_once __DIR__ . '/../model/User.php';
+
+$dv = new SuKien($ket_noi);
+$user = new User($ket_noi);
+
+$user->bat_buoc_admin();
 
 $base = $cfg_base_url;
 
