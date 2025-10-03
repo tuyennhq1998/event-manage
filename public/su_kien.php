@@ -8,17 +8,17 @@ include __DIR__ . '/../layout/header.php';
 $id = (int) ($_GET['id'] ?? 0);
 $su_kien = $dv->lay_su_kien_theo_id($id);
 if (!$su_kien) {
-  echo '<p>❌ Khong tim thay su kien.</p>';
-  include __DIR__ . '/../layout/footer.php';
-  exit;
+    echo '<p>❌ Khong tim thay su kien.</p>';
+    include __DIR__ . '/../layout/footer.php';
+    exit;
 }
 
 /* ====== TÍNH TRẠNG THÁI ====== */
 $tt = $dv->tinh_trang_thai_su_kien($su_kien['thoi_gian_bat_dau'], $su_kien['thoi_gian_ket_thuc']);
 $ten_tt = [
-  'sap_toi' => 'Sắp tới',
-  'dang_dien_ra' => 'Đang diễn ra',
-  'da_ket_thuc' => 'Đã kết thúc'
+    'sap_toi' => 'Sắp tới',
+    'dang_dien_ra' => 'Đang diễn ra',
+    'da_ket_thuc' => 'Đã kết thúc'
 ][$tt] ?? $tt;
 
 /* ====== LẤY GIÁ & GIỚI HẠN, ĐẾM SỐ NGƯỜI ĐÃ ĐĂNG KÝ ====== */
@@ -36,76 +36,76 @@ $con_lai = ($gioi_han > 0) ? max(0, $gioi_han - $so_da_dk) : null;
 // Format tiền VND
 function format_vnd($n)
 {
-  return $n > 0 ? number_format($n, 0, ',', '.') . ' đ' : 'Miễn phí';
+    return $n > 0 ? number_format($n, 0, ',', '.') . ' đ' : 'Miễn phí';
 }
 $hien_gia = format_vnd($gia);
 
 /* ====== KIỂM TRA USER ĐÃ ĐĂNG KÝ CHƯA ====== */
 $da_dang_ky = false;
 if (isset($_SESSION['user_id'])) {
-  // Nếu có hệ thống đăng nhập với user_id
-  $stm_check = $ket_noi->prepare("SELECT COUNT(*) FROM event_registrations WHERE su_kien_id = :su_kien_id AND user_id = :user_id");
-  $stm_check->execute([
-    ':su_kien_id' => $id,
-    ':user_id' => $_SESSION['user_id']
-  ]);
-  $da_dang_ky = (int) $stm_check->fetchColumn() > 0;
+    // Nếu có hệ thống đăng nhập với user_id
+    $stm_check = $ket_noi->prepare("SELECT COUNT(*) FROM event_registrations WHERE su_kien_id = :su_kien_id AND user_id = :user_id");
+    $stm_check->execute([
+        ':su_kien_id' => $id,
+        ':user_id' => $_SESSION['user_id']
+    ]);
+    $da_dang_ky = (int) $stm_check->fetchColumn() > 0;
 } elseif (isset($_SESSION['user_email'])) {
-  // Nếu chỉ có email trong session
-  $stm_check = $ket_noi->prepare("SELECT COUNT(*) FROM event_registrations WHERE su_kien_id = :su_kien_id AND email = :email");
-  $stm_check->execute([
-    ':su_kien_id' => $id,
-    ':email' => $_SESSION['user_email']
-  ]);
-  $da_dang_ky = (int) $stm_check->fetchColumn() > 0;
+    // Nếu chỉ có email trong session
+    $stm_check = $ket_noi->prepare("SELECT COUNT(*) FROM event_registrations WHERE su_kien_id = :su_kien_id AND email = :email");
+    $stm_check->execute([
+        ':su_kien_id' => $id,
+        ':email' => $_SESSION['user_email']
+    ]);
+    $da_dang_ky = (int) $stm_check->fetchColumn() > 0;
 } elseif (isset($_COOKIE['user_email'])) {
-  // Hoặc kiểm tra qua cookie nếu có
-  $stm_check = $ket_noi->prepare("SELECT COUNT(*) FROM event_registrations WHERE su_kien_id = :su_kien_id AND email = :email");
-  $stm_check->execute([
-    ':su_kien_id' => $id,
-    ':email' => $_COOKIE['user_email']
-  ]);
-  $da_dang_ky = (int) $stm_check->fetchColumn() > 0;
+    // Hoặc kiểm tra qua cookie nếu có
+    $stm_check = $ket_noi->prepare("SELECT COUNT(*) FROM event_registrations WHERE su_kien_id = :su_kien_id AND email = :email");
+    $stm_check->execute([
+        ':su_kien_id' => $id,
+        ':email' => $_COOKIE['user_email']
+    ]);
+    $da_dang_ky = (int) $stm_check->fetchColumn() > 0;
 }
 $checkin_code = null;
 $qr_checkin_url = null;
 $stmReg = '';
 if ($da_dang_ky) {
-  // Lấy 1 bản ghi đăng ký gần nhất của user cho sự kiện này
-  if (!empty($_SESSION['user_id'])) {
-    $stmReg = $ket_noi->prepare("
+    // Lấy 1 bản ghi đăng ký gần nhất của user cho sự kiện này
+    if (!empty($_SESSION['user_id'])) {
+        $stmReg = $ket_noi->prepare("
         SELECT id, checkin_code 
         FROM event_registrations 
         WHERE su_kien_id = :sid AND user_id = :uid 
         ORDER BY id DESC LIMIT 1
       ");
-    $stmReg->execute([':sid' => $id, ':uid' => $_SESSION['user_id']]);
-  } else {
-    // fallback theo email (session/cookie) nếu không có user_id
-    $emailForFind = $_SESSION['user_email'] ?? ($_COOKIE['user_email'] ?? null);
-    $stmReg = $ket_noi->prepare("
+        $stmReg->execute([':sid' => $id, ':uid' => $_SESSION['user_id']]);
+    } else {
+        // fallback theo email (session/cookie) nếu không có user_id
+        $emailForFind = $_SESSION['user_email'] ?? ($_COOKIE['user_email'] ?? null);
+        $stmReg = $ket_noi->prepare("
         SELECT id, checkin_code 
         FROM event_registrations 
         WHERE su_kien_id = :sid AND email = :em 
         ORDER BY id DESC LIMIT 1
       ");
-    $stmReg->execute([':sid' => $id, ':em' => $emailForFind]);
-  }
-  $reg = $stmReg->fetch(PDO::FETCH_ASSOC);
-
-  if ($reg) {
-    $reg_id = (int) $reg['id'];
-    $checkin_code = trim((string) $reg['checkin_code']);
-    // Nếu chưa có checkin_code -> tạo và lưu lại
-    if ($checkin_code === '') {
-      $checkin_code = 'SK' . $id . '-R' . $reg_id . '-' . substr(bin2hex(random_bytes(3)), 0, 6);
-      $stmUp = $ket_noi->prepare("UPDATE event_registrations SET checkin_code = :cc WHERE id = :rid");
-      $stmUp->execute([':cc' => $checkin_code, ':rid' => $reg_id]);
+        $stmReg->execute([':sid' => $id, ':em' => $emailForFind]);
     }
+    $reg = $stmReg->fetch(PDO::FETCH_ASSOC);
 
-    // Tạo QR URL từ checkin_code
-    $qr_checkin_url = tao_qr_qrserver($checkin_code, 260);
-  }
+    if ($reg) {
+        $reg_id = (int) $reg['id'];
+        $checkin_code = trim((string) $reg['checkin_code']);
+        // Nếu chưa có checkin_code -> tạo và lưu lại
+        if ($checkin_code === '') {
+            $checkin_code = 'SK' . $id . '-R' . $reg_id . '-' . substr(bin2hex(random_bytes(3)), 0, 6);
+            $stmUp = $ket_noi->prepare("UPDATE event_registrations SET checkin_code = :cc WHERE id = :rid");
+            $stmUp->execute([':cc' => $checkin_code, ':rid' => $reg_id]);
+        }
+
+        // Tạo QR URL từ checkin_code
+        $qr_checkin_url = tao_qr_qrserver($checkin_code, 260);
+    }
 }
 // Quyết định cho phép bấm đăng ký
 $cho_phep_dk = ($tt === 'sap_toi') && ($gioi_han <= 0 || $con_lai > 0) && !$da_dang_ky;
@@ -142,8 +142,8 @@ $cho_phep_dk = ($tt === 'sap_toi') && ($gioi_han <= 0 || $con_lai > 0) && !$da_d
         <!-- Trạng thái / nút -->
         <?php if ($da_dang_ky): ?>
         <?php if (empty($qr_checkin_url) && !empty($checkin_code)) {
-        $qr_checkin_url = tao_qr_qrserver($checkin_code, 260);
-      } ?>
+                $qr_checkin_url = tao_qr_qrserver($checkin_code, 260);
+            } ?>
         <button class="nut phu" type="button" data-mo-qr data-qr="<?= htmlspecialchars($qr_checkin_url) ?>"
             data-code="<?= htmlspecialchars($checkin_code) ?>">
             ✅ Đã đăng ký (xem QR)
