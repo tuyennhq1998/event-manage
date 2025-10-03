@@ -79,7 +79,7 @@ try {
     . '<p>Quét QR dưới đây khi đến tham dự:</p>'
     . '<p><img src="' . htmlspecialchars($qr_checkin_url) . '" alt="QR check-in" style="width:240px;height:240px;border:1px solid #eee;border-radius:8px"></p>';
 
-  gui_email_don_gian($email, '[Xac nhan] Dang ky su kien', $nd_user);
+  gui_email_don_gian($email, '[Xác nhận] Đăng ký sự kiện', $nd_user);
 
   // Email cho admin
   global $cfg_email_admin;
