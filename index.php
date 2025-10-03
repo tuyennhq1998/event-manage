@@ -16,9 +16,11 @@ $uriPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
 $targetPath = realpath($publicReal . $uriPath);
 
 // Nếu trùng file thật trong public => trả file tĩnh
-if ($targetPath !== false
+if (
+    $targetPath !== false
     && strncmp($targetPath, $publicReal, strlen($publicReal)) === 0
-    && is_file($targetPath)) {
+    && is_file($targetPath)
+) {
 
     // Gán Content-Type đơn giản
     $mime = function_exists('mime_content_type') ? mime_content_type($targetPath) : 'application/octet-stream';
