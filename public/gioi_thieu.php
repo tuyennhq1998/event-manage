@@ -245,7 +245,7 @@ include __DIR__ . '/../layout/header.php';
         <h1>
             GIỚI THIỆU VỀ EVENTSPLANT
         </h1>
-        <h2>
+        <h2 style="text-align: justify;text-indent: 63px;">
             Trang web EventsPlant là nền tảng quản lý sự kiện toàn diện, giúp doanh nghiệp, tổ chức và cá nhân dễ dàng
             tổ chức, theo dõi và tối ưu hóa mọi hoạt động liên quan đến sự kiện. Với giao diện trực quan, thao tác đơn
             giản và các tính năng hiện đại như quản lý khách mời, lịch trình, vé mời và báo cáo thống kê, EventsPlant
